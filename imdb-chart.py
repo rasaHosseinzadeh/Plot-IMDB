@@ -8,7 +8,9 @@ import plotly.express as px
 import sys
 
 
-def crawle_imdb_season(url) -> list:
+def crawle_imdb_season(base_url, season) -> list:
+    url = base_url+season
+    sys.stderr.write(f"Crawling Season {season}.\n")
     Episode = namedtuple('Episode', ['season', 'num', 'name', 'vote', 'rate'])
     with request.urlopen(url) as response:
         page = response.read()
@@ -29,7 +31,7 @@ def crawle_imdb_season(url) -> list:
 
 def crawl_imdb_series(base_url: str, season_count: int) -> list:
     return (eps for i in range(1, season_count + 1) for eps in
-            crawle_imdb_season(base_url+str(i)))
+            crawle_imdb_season(base_url, str(i)))
 
 
 def get_season_count(base_url: str) -> int:
@@ -46,7 +48,7 @@ def get_season_count(base_url: str) -> int:
     return season_count
 
 
-def plot(series) -> None:
+def plot(series, name) -> None:
     rate_trace = Scatter(
         name='',
         x=series.index,
@@ -87,7 +89,7 @@ def plot(series) -> None:
     fig.update_xaxes(title="Episode")
     fig.update_yaxes(title_text="<b>Rate</b>", secondary_y=False)
     fig.update_yaxes(title_text="<b>Vote Count</b>", secondary_y=True)
-    fig.show()
+    fig.write_html(f"./{name}.html")
 
 
 if __name__ == "__main__":
@@ -95,7 +97,8 @@ if __name__ == "__main__":
     name = sys.argv[2]
     base_url = "https://www.imdb.com/title/{}/episodes?season=".format(
         series_id)
+    sys.stderr.write("Get Season count.\n")
     season_count = get_season_count(base_url)
     series = DataFrame(data=crawl_imdb_series(base_url, season_count))
     series.index += 1
-    plot(series)
+    plot(series, name)
