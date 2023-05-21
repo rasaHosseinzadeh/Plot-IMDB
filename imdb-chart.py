@@ -77,7 +77,6 @@ def plot(series, name) -> None:
     fig.update_traces(showlegend=False,)
     fig.update_layout(
         hoverlabel=dict(
-            bgcolor="white",
             font_size=16,
         )
     )
@@ -85,7 +84,8 @@ def plot(series, name) -> None:
                       title=name,
                       title_font_size=30,
                       title_x=0.5,
-                      colorscale_sequential=px.colors.qualitative.Light24,)
+                      colorscale_sequential=px.colors.qualitative.Light24
+                      )
     fig.update_xaxes(title="Episode")
     fig.update_yaxes(title_text="<b>Rate</b>", secondary_y=False)
     fig.update_yaxes(title_text="<b>Vote Count</b>", secondary_y=True)
